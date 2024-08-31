@@ -4,27 +4,26 @@ function Question({ question, onAnswered }) {
   const [timeRemaining, setTimeRemaining] = useState(10);
 
   useEffect(() => {
-    // Define a function that will be called when timeRemaining reaches 0
+    // Set up the timer
     const timerId = setTimeout(() => {
       setTimeRemaining((prevTime) => {
-        if (prevTime === 1) {
-          // Time is up
-          setTimeRemaining(10); // Reset timer
-          onAnswered(false); // Notify that the answer is incorrect
-        } else {
-          // Decrease time remaining
+        if (prevTime > 1) {
           return prevTime - 1;
+        } else {
+          // Timer has reached 0, handle timeout
+          onAnswered(false);
+          return 10; // Reset timer to 10 seconds for the next question
         }
       });
     }, 1000);
 
-    // Cleanup function to clear the timeout when component unmounts or timer resets
+    // Cleanup function to clear the timer when the component unmounts
     return () => clearTimeout(timerId);
-  }, [timeRemaining, onAnswered]); // Dependency array to rerun effect when timeRemaining changes
+  }, [timeRemaining, onAnswered]);
 
   function handleAnswer(isCorrect) {
-    setTimeRemaining(10); // Reset timer when an answer is selected
-    onAnswered(isCorrect); // Notify parent of the answer
+    setTimeRemaining(10); // Reset the timer when an answer is given
+    onAnswered(isCorrect);
   }
 
   const { id, prompt, answers, correctIndex } = question;
